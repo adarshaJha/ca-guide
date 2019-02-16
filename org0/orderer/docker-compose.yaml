@@ -1,0 +1,68 @@
+version: '2'
+
+networks:
+  org0:
+    external:
+      name: ca_org0
+  org1:
+    external:
+      name: ca_org1
+  org2:
+    external:
+      name: ca_org2
+
+services:
+  orderer1-org0:
+    container_name: orderer1-org0
+    image: hyperledger/fabric-ca-orderer
+    environment:
+      - ORDERER_HOME=/tmp/hyperledger/orderer
+      - ORDERER_HOST=orderer1-org0
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/orderer/msp
+      # - ORDERER_GENERAL_TLS_ENABLED=true
+      # - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/orderer/tls-msp/signcerts/cert.pem
+      # - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/orderer/tls-msp/keystore/key.pem
+      # - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7054.pem]
+      # - ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+      # - ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/org0-ca-chain.pem]
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
+    volumes:
+      - ./orderer:/tmp/hyperledger/orderer/
+      - ./orderer/tls-msp:/tmp/hyperledger/orderer/tls-msp
+    networks:
+      - org0
+      - org1
+      - org2
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer1-org2:7051
+      - CORE_PEER_LOCALMSPID=org2MSP
+      # - CORE_PEER_TLS_ENABLED=true
+      # - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/cli/org1/peer1/tls-msp/signcerts/cert.pem
+      # - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/cli/org1/peer1/tls-msp/keystore/key.pem
+      # - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/cli/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7054.pem
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/cli/org2/peer1/admin/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org2/peer1
+    command: sh 
+    volumes:
+      - ../../org2/peer1/tls-msp:/tmp/hyperledger/cli/org2/peer1/tls-msp
+      - ../../org2/peer1/admin:/tmp/hyperledger/cli/org2/peer1/admin
+      - ../../org2/peer1/assets:/tmp/hyperledger/cli/org2/peer1/assets
+    networks:
+      - org0
+      - org1
+      - org2
