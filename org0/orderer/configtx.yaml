@@ -16,7 +16,7 @@ Organizations:
     ID: org0MSP
 
     # MSPDir is the filesystem path which contains the MSP configuration
-    MSPDir: /Users/saadkarim/Development/src/github.com/hyperledger/guide/org0/msp
+    MSPDir: /tmp/hyperledger/org0/msp
 
   - &org1
 
@@ -26,7 +26,7 @@ Organizations:
     ID: org1MSP
 
     # MSPDir is the filesystem path which contains the MSP configuration
-    MSPDir: /Users/saadkarim/Development/src/github.com/hyperledger/guide/org1/msp
+    MSPDir: /tmp/hyperledger/org1/msp
 
     AnchorPeers:
        # AnchorPeers defines the location of peers which can be used
@@ -43,7 +43,7 @@ Organizations:
     ID: org2MSP
 
     # MSPDir is the filesystem path which contains the MSP configuration
-    MSPDir: /Users/saadkarim/Development/src/github.com/hyperledger/guide/org2/msp
+    MSPDir: /tmp/hyperledger/org2/msp
 
     AnchorPeers:
        # AnchorPeers defines the location of peers which can be used
